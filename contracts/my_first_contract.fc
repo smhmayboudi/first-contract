@@ -1,14 +1,35 @@
 #include "imports/stdlib.fc";
 
+;; sender_address is the address of last sender
+global slice sender_address;
+
+;; load_data populates storage variables using stored data
+() load_data() impure {
+    slice ds = get_data().begin_parse();
+    sender_address = ds~load_msg_addr();
+    ds.end_parse();
+}
+
+;; save_data stores storage variables as a cell into persistent storage
+() save_data() impure {
+    set_data(
+        begin_cell()
+            .store_slice(sender_address)
+            .end_cell()
+    );
+}
+
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     slice cs = in_msg_full.begin_parse();
     int flags = cs~load_uint(4);
-    slice sender_address = cs~load_msg_addr();
-
-    set_data(begin_cell().store_slice(sender_address).end_cell());
+    if (flags & 1) { ;; ignore all bounced messages
+        return ();
+    }
+    sender_address = cs~load_msg_addr();
+    save_data();
 }
 
 slice get_the_latest_sender() method_id {
-    slice ds = get_data().begin_parse();
-    return ds~load_msg_addr();
+    load_data();
+    return sender_address;
 }

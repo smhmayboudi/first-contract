@@ -37,7 +37,7 @@ describe('MyFirstContract', () => {
         // blockchain and myFirstContract are ready to use
     });
 
-    it('should deploy', async () => {
+    it('should getTheLatestSender', async () => {
         const counterBefore = await deployer.address;
         const counterAfter = await myFirstContract.getTheLatestSender();
         expect(counterAfter.toString()).toBe(counterBefore.toString());
