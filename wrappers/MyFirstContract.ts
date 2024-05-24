@@ -7,7 +7,10 @@ export function myFirstContractConfigToCell(config: MyFirstContractConfig): Cell
 }
 
 export class MyFirstContract implements Contract {
-    constructor(readonly address: Address, readonly init?: { code: Cell; data: Cell }) {}
+    constructor(
+        readonly address: Address,
+        readonly init?: { code: Cell; data: Cell },
+    ) {}
 
     static createFromAddress(address: Address) {
         return new MyFirstContract(address);
