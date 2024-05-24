@@ -26,4 +26,9 @@ export class MyFirstContract implements Contract {
             body: beginCell().endCell(),
         });
     }
+
+    async getTheLatestSender(provider: ContractProvider) {
+        const result = await provider.get('get_the_latest_sender', []);
+        return result.stack.readAddress();
+    }
 }
