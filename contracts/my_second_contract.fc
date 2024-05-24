@@ -1,3 +1,7 @@
+;; store in c4 the address of the sender of the last message and the integer total - a 32-bit unsigned number;
+;; when receiving an internal incoming message, the contract must take the address from in_msg, a 32-bit unsigned integer from the body of the message, add it to total, and store the address and amount in the contract data;
+;; The smart contract must have a get_sum method that allows you to return the total value;
+
 #include "imports/stdlib.fc";
 
 ;; sender_address is the address of last sender
@@ -7,7 +11,7 @@ global int sum;
 
 ;; load_data populates storage variables using stored data
 () load_data() impure {
-    var ds = get_data().begin_parse();
+    slice ds = get_data().begin_parse();
     sender_address = ds~load_msg_addr();
     sum = ds~load_uint(32);
     ds.end_parse();
@@ -24,12 +28,18 @@ global int sum;
 }
 
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+	if (in_msg_body.slice_empty?()) { ;; ignore empty messages
+		return ();
+	}
     slice cs = in_msg_full.begin_parse();
     int flags = cs~load_uint(4);
-    slice sender_address = cs~load_msg_addr();
-    int n = in_msg_body~load_uint(32);
+    if (flags & 1) { ;; ignore all bounced messages
+        return ();
+    }
+    sender_address = cs~load_msg_addr();
+    int num = in_msg_body~load_uint(32);
     load_data();
-    sum += n;
+    sum += num;
     save_data();
 }
 

@@ -36,4 +36,15 @@ describe('MySecondContract', () => {
         // the check is done inside beforeEach
         // blockchain and mySecondContract are ready to use
     });
+
+    it('should getSum', async () => {
+        const counterBefore = await mySecondContract.getSum();
+        console.log('sum before', counterBefore);
+        const increaseBy = Math.floor(Math.random() * 100);
+        console.log('increasing by', increaseBy);
+        const increaseResult = await mySecondContract.sendIncrease(increaser.getSender(), {
+            increaseBy,
+            value: toNano('0.05'),
+        });
+    });
 });
