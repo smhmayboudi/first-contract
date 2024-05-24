@@ -12,6 +12,9 @@ global int sum;
 ;; load_data populates storage variables using stored data
 () load_data() impure {
     slice ds = get_data().begin_parse();
+    if (ds.slice_empty?()) {
+        return ();
+    }
     sender_address = ds~load_msg_addr();
     sum = ds~load_uint(32);
     ds.end_parse();
@@ -36,10 +39,9 @@ global int sum;
     if (flags & 1) { ;; ignore all bounced messages
         return ();
     }
-    sender_address = cs~load_msg_addr();
-    int num = in_msg_body~load_uint(32);
     load_data();
-    sum += num;
+    sender_address = cs~load_msg_addr();
+    sum += in_msg_body~load_uint(32);
     save_data();
 }
 

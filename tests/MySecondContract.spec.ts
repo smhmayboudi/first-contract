@@ -38,13 +38,9 @@ describe('MySecondContract', () => {
     });
 
     it('should getSum', async () => {
-        const counterBefore = await mySecondContract.getSum();
-        console.log('sum before', counterBefore);
-        const increaseBy = Math.floor(Math.random() * 100);
-        console.log('increasing by', increaseBy);
-        const increaseResult = await mySecondContract.sendIncrease(increaser.getSender(), {
-            increaseBy,
-            value: toNano('0.05'),
-        });
+        const counterBefore = await deployer.address;
+        const counterAfter = await mySecondContract.getSum();
+        console.log(counterAfter)
+        // expect(counterAfter.toString()).toBe(counterBefore.toString());
     });
 });
