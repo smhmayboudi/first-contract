@@ -1,0 +1,43 @@
+#include "imports/stdlib.fc";
+
+;; sender_address is the address of last sender
+global int counter_value;
+global slice sender_address;
+
+;; load_data populates storage variables using stored data
+() load_data() impure {
+    slice ds = get_data().begin_parse();
+    if (ds.slice_empty?()) {
+        return ();
+    }
+    counter_value = ds~load_uint(32);
+    sender_address = ds~load_msg_addr();
+    ds.end_parse();
+}
+
+;; save_data stores storage variables as a cell into persistent storage
+() save_data() impure {
+    set_data(
+        begin_cell()
+            .store_uint(counter_value, 32)
+            .store_slice(sender_address)
+            .end_cell()
+    );
+}
+
+() recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
+    slice cs = in_msg_full.begin_parse();
+    int flags = cs~load_uint(4);
+    load_data();
+    sender_address = cs~load_msg_addr();
+    int op = in_msg_body~load_unit(32);
+    if (op == 1) {
+        counter_value += 1;
+        save_data();
+    }
+}
+
+slice get_contract_storage_data() method_id {
+    load_data();
+    return (counter_value, sender_address);
+}
