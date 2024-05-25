@@ -28,16 +28,20 @@ global slice sender_address;
 () recv_internal(int my_balance, int msg_value, cell in_msg_full, slice in_msg_body) impure {
     slice cs = in_msg_full.begin_parse();
     int flags = cs~load_uint(4);
-    load_data();
     sender_address = cs~load_msg_addr();
-    int op = in_msg_body~load_unit(32);
+    int op = in_msg_body~load_uint(32);
     if (op == 1) {
+        slice ds = get_data().begin_parse();
+        counter_value = ds~load_uint(32);
         counter_value += 1;
         save_data();
+        return ();
     }
+
+    return ();
 }
 
-slice get_contract_storage_data() method_id {
+(int, slice) get_contract_storage_data() method_id {
     load_data();
     return (counter_value, sender_address);
 }

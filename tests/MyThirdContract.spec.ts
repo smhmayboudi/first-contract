@@ -18,9 +18,17 @@ describe('MyThirdContract', () => {
     beforeEach(async () => {
         blockchain = await Blockchain.create();
 
-        myThirdContract = blockchain.openContract(MyThirdContract.createFromConfig({}, code));
-
         deployer = await blockchain.treasury('deployer');
+
+        myThirdContract = blockchain.openContract(
+            MyThirdContract.createFromConfig(
+                {
+                    number: 0,
+                    address: deployer.address,
+                },
+                code,
+            ),
+        );
 
         const deployResult = await myThirdContract.sendDeploy(deployer.getSender(), toNano('0.05'));
 
@@ -35,5 +43,11 @@ describe('MyThirdContract', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and myThirdContract are ready to use
+    });
+
+    it('getData', async () => {
+        const data = await myThirdContract.getData();
+        expect(data.recent_sender.toString()).toBe(deployer.address.toString());
+        expect(data.number).toEqual(1);
     });
 });
