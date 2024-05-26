@@ -30,7 +30,7 @@ describe('MyThirdContract', () => {
             ),
         );
 
-        const deployResult = await myThirdContract.sendDeploy(deployer.getSender(), toNano('0.05'));
+        const deployResult = await myThirdContract.sendDeploy(deployer.getSender(), toNano('0.05'), 1);
 
         expect(deployResult.transactions).toHaveTransaction({
             from: deployer.address,
