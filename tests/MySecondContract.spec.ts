@@ -40,7 +40,7 @@ describe('MySecondContract', () => {
     it('should getSum', async () => {
         const counterBefore = await deployer.address;
         const counterAfter = await mySecondContract.getSum();
-        console.log(counterAfter)
+        console.log(counterAfter);
         // expect(counterAfter.toString()).toBe(counterBefore.toString());
     });
 });

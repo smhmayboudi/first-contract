@@ -49,8 +49,11 @@ export class MyFourthContract implements Contract {
         });
     }
 
-    async sendNoCodeDeposit(provider: ContractProvider, sender: Sender, value: bigint) {
-        const msg_body = beginCell().endCell();
+    async sendWithdrawalRequest(provider: ContractProvider, sender: Sender, value: bigint, amount: bigint) {
+        const msg_body = beginCell()
+            .storeUint(3, 32) // OP code
+            .storeCoins(amount) // amount value
+            .endCell();
         await provider.internal(sender, {
             value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,
@@ -58,11 +61,8 @@ export class MyFourthContract implements Contract {
         });
     }
 
-    async sendWithdrawalRequest(provider: ContractProvider, sender: Sender, value: bigint, amount: bigint) {
-        const msg_body = beginCell()
-            .storeUint(3, 32) // OP code
-            .storeCoins(amount) // amount value
-            .endCell();
+    async sendNoCodeDeposit(provider: ContractProvider, sender: Sender, value: bigint) {
+        const msg_body = beginCell().endCell();
         await provider.internal(sender, {
             value,
             sendMode: SendMode.PAY_GAS_SEPARATELY,

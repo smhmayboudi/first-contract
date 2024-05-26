@@ -33,4 +33,5 @@ export class MySecondContract implements Contract {
     async getSum(provider: ContractProvider) {
         const result = await provider.get('get_sum', []);
         return result.stack.readAddress();
-    }}
+    }
+}

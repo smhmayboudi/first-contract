@@ -24,3 +24,11 @@
 ### Add a new contract
 
 `npx blueprint create ContractName` or `yarn blueprint create ContractName`
+
+# References
+
+https://github.com/markokhman/func-course-chapter-3-code
+
+https://github.com/markokhman/func-course-chapter-4-code
+
+https://github.com/markokhman/func-course-chapter-5-code

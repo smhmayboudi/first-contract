@@ -53,6 +53,50 @@ describe('MyFourthContract', () => {
         expect(balanceRequest.balance).toBeGreaterThan(toNano('4.99'));
     });
 
+    it('sendWithdrawalRequest', async () => {
+        await myFourthContract.sendDeposit(sender.getSender(), toNano('5'));
+        const withdrawalRequestResult = await myFourthContract.sendWithdrawalRequest(
+            owner.getSender(),
+            toNano('0.05'),
+            toNano('1'),
+        );
+        expect(withdrawalRequestResult.transactions).toHaveTransaction({
+            from: myFourthContract.address,
+            to: owner.address,
+            success: true,
+            value: toNano(1),
+        });
+    });
+
+    it('sendWithdrawalRequest fail owner', async () => {
+        await myFourthContract.sendDeposit(sender.getSender(), toNano('5'));
+        const withdrawalRequestResult = await myFourthContract.sendWithdrawalRequest(
+            sender.getSender(),
+            toNano('0.05'),
+            toNano('1'),
+        );
+        expect(withdrawalRequestResult.transactions).toHaveTransaction({
+            from: sender.address,
+            to: myFourthContract.address,
+            success: false,
+            exitCode: 103,
+        });
+    });
+
+    it('sendWithdrawalRequest fail balance', async () => {
+        const withdrawalRequestResult = await myFourthContract.sendWithdrawalRequest(
+            owner.getSender(),
+            toNano('0.5'),
+            toNano('1'),
+        );
+        expect(withdrawalRequestResult.transactions).toHaveTransaction({
+            from: owner.address,
+            to: myFourthContract.address,
+            success: false,
+            exitCode: 104,
+        });
+    });
+
     it('getData', async () => {
         const deployResult = await myFourthContract.sendIncrement(sender.getSender(), toNano('0.05'), 1);
         expect(deployResult.transactions).toHaveTransaction({
