@@ -12,43 +12,47 @@ describe('MyFourthContract', () => {
     });
 
     let blockchain: Blockchain;
-    let deployer: SandboxContract<TreasuryContract>;
+    let sender: SandboxContract<TreasuryContract>;
+    let owner: SandboxContract<TreasuryContract>;
     let myFourthContract: SandboxContract<MyFourthContract>;
 
     beforeEach(async () => {
         blockchain = await Blockchain.create();
-
-        deployer = await blockchain.treasury('deployer');
-
+        sender = await blockchain.treasury('sender');
+        owner = await blockchain.treasury('owner');
         myFourthContract = blockchain.openContract(
             MyFourthContract.createFromConfig(
                 {
                     counter: 0,
-                    sender: deployer.address,
-                    owner: deployer.address,
+                    sender: sender.address,
+                    owner: owner.address,
                 },
                 code,
             ),
         );
+    });
 
-        const deployResult = await myFourthContract.sendDeploy(deployer.getSender(), toNano('0.05'), 1);
-
+    it('should sendIncrement', async () => {
+        const deployResult = await myFourthContract.sendIncrement(sender.getSender(), toNano('0.05'), 1);
         expect(deployResult.transactions).toHaveTransaction({
-            from: deployer.address,
+            from: sender.address,
             to: myFourthContract.address,
             deploy: true,
             success: true,
         });
     });
 
-    it('should deploy', async () => {
-        // the check is done inside beforeEach
-        // blockchain and myFourthContract are ready to use
+    it('getData', async () => {
+        const deployResult = await myFourthContract.sendIncrement(sender.getSender(), toNano('0.05'), 1);
+        const data = await myFourthContract.getData();
+        expect(data.counter).toEqual(1);
+        expect(data.sender.toString()).toBe(sender.address.toString());
+        expect(data.owner.toString()).toBe(owner.address.toString());
     });
 
-    it('getData', async () => {
-        const data = await myFourthContract.getData();
-        expect(data.recent_sender.toString()).toBe(deployer.address.toString());
-        expect(data.number).toEqual(1);
+    it('getBalance', async () => {
+        const deployResult = await myFourthContract.sendIncrement(sender.getSender(), toNano('0.05'), 1);
+        const data = await myFourthContract.getBalance();
+        expect(data.balance).toBeGreaterThan(toNano(0.048));
     });
 });
