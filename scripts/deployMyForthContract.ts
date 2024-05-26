@@ -1,13 +1,22 @@
 import { toNano } from '@ton/core';
-import { MyForthContract } from '../wrappers/MyForthContract';
+import { MyFourthContract } from '../wrappers/MyFourthContract';
 import { compile, NetworkProvider } from '@ton/blueprint';
 
 export async function run(provider: NetworkProvider) {
-    const myForthContract = provider.open(MyForthContract.createFromConfig({}, await compile('MyForthContract')));
+    const myFourthContract = provider.open(
+        MyFourthContract.createFromConfig(
+            {
+                counter: 0,
+                sender: provider.sender().address!,
+                owner: provider.sender().address!,
+            },
+            await compile('MyFourthContract'),
+        ),
+    );
 
-    await myForthContract.sendDeploy(provider.sender(), toNano('0.05'));
+    await myFourthContract.sendDeposit(provider.sender(), toNano('0.05'));
 
-    await provider.waitForDeploy(myForthContract.address);
+    await provider.waitForDeploy(myFourthContract.address);
 
-    // run methods on `myForthContract`
+    // run methods on `myFourthContract`
 }
