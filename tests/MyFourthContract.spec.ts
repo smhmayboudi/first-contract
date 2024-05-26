@@ -32,7 +32,7 @@ describe('MyFourthContract', () => {
         );
     });
 
-    it('should sendIncrement', async () => {
+    it('sendIncrement', async () => {
         const deployResult = await myFourthContract.sendIncrement(sender.getSender(), toNano('0.05'), 1);
         expect(deployResult.transactions).toHaveTransaction({
             from: sender.address,
@@ -42,8 +42,25 @@ describe('MyFourthContract', () => {
         });
     });
 
+    it('sendDeposit', async () => {
+        const depositMessageResult = await myFourthContract.sendDeposit(sender.getSender(), toNano('5'));
+        expect(depositMessageResult.transactions).toHaveTransaction({
+            from: sender.address,
+            to: myFourthContract.address,
+            success: true,
+        });
+        const balanceRequest = await myFourthContract.getBalance();
+        expect(balanceRequest.balance).toBeGreaterThan(toNano('4.99'));
+    });
+
     it('getData', async () => {
         const deployResult = await myFourthContract.sendIncrement(sender.getSender(), toNano('0.05'), 1);
+        expect(deployResult.transactions).toHaveTransaction({
+            from: sender.address,
+            to: myFourthContract.address,
+            deploy: true,
+            success: true,
+        });
         const data = await myFourthContract.getData();
         expect(data.counter).toEqual(1);
         expect(data.sender.toString()).toBe(sender.address.toString());
@@ -52,6 +69,12 @@ describe('MyFourthContract', () => {
 
     it('getBalance', async () => {
         const deployResult = await myFourthContract.sendIncrement(sender.getSender(), toNano('0.05'), 1);
+        expect(deployResult.transactions).toHaveTransaction({
+            from: sender.address,
+            to: myFourthContract.address,
+            deploy: true,
+            success: true,
+        });
         const data = await myFourthContract.getBalance();
         expect(data.balance).toBeGreaterThan(toNano(0.048));
     });
