@@ -27,6 +27,8 @@
 
 # References
 
+https://github.com/klauss-z/func_course
+
 https://github.com/markokhman/func-course-chapter-3-code
 
 https://github.com/markokhman/func-course-chapter-4-code
